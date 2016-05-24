@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/id_igv_contact_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:src="@android:mipmap/sym_def_app_icon"/>
+
+    <TextView
+        android:id="@+id/id_txv_phone_num_item_recycle_main_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/id_igv_contact_image"
+        tools:text="13512121312"/>
+
+    <TextView
+        android:id="@+id/id_txv_message_body_item_recycle_main_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/id_txv_phone_num_item_recycle_main_message"
+        android:layout_toRightOf="@+id/id_igv_contact_image"
+        android:layout_toLeftOf="@+id/id_txv_message_date_item_recycle_main_message"
+        android:ellipsize="end"
+        android:maxLines="1"
+        tools:text="这是一条信息........"/>
+
+    <TextView
+        android:id="@+id/id_txv_message_service_item_recycle_main_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        tools:text="信息服务台"/>
+
+    <TextView
+        android:id="@+id/id_txv_message_date_item_recycle_main_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/id_txv_message_service_item_recycle_main_message"
+        tools:text="下午2：53"/>
+
+</RelativeLayout>
