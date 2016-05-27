@@ -183,4 +183,21 @@ public class Message implements Parcelable {
             return new Message[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "mId='" + mId + '\'' +
+                ", mThread_id='" + mThread_id + '\'' +
+                ", mAddress='" + mAddress + '\'' +
+                ", mPerson='" + mPerson + '\'' +
+                ", mDate='" + mDate + '\'' +
+                ", mProtocol='" + mProtocol + '\'' +
+                ", mRead='" + mRead + '\'' +
+                ", mStatus='" + mStatus + '\'' +
+                ", mType='" + mType + '\'' +
+                ", mBody='" + mBody + '\'' +
+                ", mService_center='" + mService_center + '\'' +
+                '}';
+    }
 }

@@ -40,7 +40,7 @@ public class MessageDetailActivity extends AppBaseActivity {
     private void addMessageDetailView() {
         if (null == mMessage)
             return;
-        TextView messageDetailView = new TextView(this);
+        TextView messageDetailView =   new TextView(this);
         messageDetailView.setText(mMessage.getBody());
         mLinearLayoutMessageContainer.addView(messageDetailView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup
                 .LayoutParams.WRAP_CONTENT));

@@ -21,11 +21,11 @@ public abstract class AppBaseActivity extends AppCompatActivity {
 
     protected abstract int setLayout();
 
-    protected abstract void initView();
+    protected abstract void initVariables();
 
     protected abstract void initData(Bundle savedInstanceState);
 
-    protected abstract void initVariables();
+    protected abstract void initView();
 
 
 }

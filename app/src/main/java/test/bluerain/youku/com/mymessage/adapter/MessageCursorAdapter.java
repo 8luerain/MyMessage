@@ -1,48 +1,37 @@
 package test.bluerain.youku.com.mymessage.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.List;
 
 import test.bluerain.youku.com.mymessage.R;
 import test.bluerain.youku.com.mymessage.entity.Message;
 import test.bluerain.youku.com.mymessage.utils.CommonUtils;
+import test.bluerain.youku.com.mymessage.utils.MessageManger;
 import test.bluerain.youku.com.mymessage.utils.MessageUtils;
 
 /**
  * Project: MyMessage.
- * Data: 2016/5/24.
+ * Data: 2016/5/27.
  * Created by 8luerain.
  * Contact:<a href="mailto:8luerain@gmail.com">Contact_me_now</a>
  */
-public class MainRecycleAdapter extends RecyclerView.Adapter<MainRecycleAdapter.ItemViewHolder> {
-
-    private List<Message> mMessages;
-    private Context mContext;
-
-    private OnRecycleItemClickListener mOnItemClickListener;
+public class MessageCursorAdapter extends CursorAdapter {
 
 
-    public MainRecycleAdapter(Context context) {
-        mContext = context;
+    public MessageCursorAdapter(Context context, Cursor c, boolean autoRequery) {
+        super(context, c, autoRequery);
     }
 
     @Override
-    public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(mContext).inflate(R.layout.item_recycle_main_message, null);
-
-        return new ItemViewHolder(itemView);
-    }
-
-    @Override
-    public void onBindViewHolder(final ItemViewHolder holder, final int position) {
-        Message message = mMessages.get(position);
+    public void bindView(View view, Context context, Cursor cursor) {
+        ItemViewHolder holder = (ItemViewHolder) view.getTag();
+        Message message = MessageManger.getMessageByCursor(cursor);
         holder.mTextViewContectPhoneNum.setText(message.getAddress());
         holder.mTextViewContectBody.setText(message.getBody());
         holder.mTextViewContectServiceNum.setText(message.getService_center());
@@ -52,30 +41,18 @@ public class MainRecycleAdapter extends RecyclerView.Adapter<MainRecycleAdapter.
         } else {
             holder.mItemView.setBackgroundColor(0xFFFFFFFF);
         }
-        if (null != mOnItemClickListener)
-            holder.mItemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mOnItemClickListener.OnItemClick(holder, mMessages.get(position), position);
-                }
-            });
     }
 
     @Override
-    public int getItemCount() {
-        return mMessages.size();
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_recycle_main_message, null);
+        ItemViewHolder itemViewHolder = new ItemViewHolder(view);
+        view.setTag(itemViewHolder);
+        return view;
     }
 
 
-    public void setOnItemClickListener(OnRecycleItemClickListener onItemClickListener) {
-        mOnItemClickListener = onItemClickListener;
-    }
-
-    public void setMessages(List<Message> messages) {
-        mMessages = messages;
-    }
-
-    public static class ItemViewHolder extends RecyclerView.ViewHolder {
+    public static class ItemViewHolder {
 
         View mItemView;
         ImageView mImageViewContectImage;
@@ -85,7 +62,6 @@ public class MainRecycleAdapter extends RecyclerView.Adapter<MainRecycleAdapter.
         TextView mTextViewContectDate;
 
         public ItemViewHolder(View itemView) {
-            super(itemView);
             mItemView = itemView;
             mImageViewContectImage = (ImageView) itemView.findViewById(R.id.id_igv_contact_image);
             mTextViewContectPhoneNum = (TextView) itemView.findViewById(R.id.id_txv_phone_num_item_recycle_main_message);
@@ -94,17 +70,9 @@ public class MainRecycleAdapter extends RecyclerView.Adapter<MainRecycleAdapter.
             mTextViewContectDate = (TextView) itemView.findViewById(R.id.id_txv_message_date_item_recycle_main_message);
         }
 
-
         public void resetBackground() {
             mItemView.setBackgroundColor(0xFFFFFFFF);
         }
-
-    }
-
-
-    public interface OnRecycleItemClickListener {
-
-        void OnItemClick(ItemViewHolder holder, Object data, int position);
 
     }
 }

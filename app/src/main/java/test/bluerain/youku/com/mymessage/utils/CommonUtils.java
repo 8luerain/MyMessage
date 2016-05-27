@@ -44,4 +44,8 @@ public class CommonUtils {
         return formatedTime;
     }
 
+    public static String getLocalDate(long utc) {
+        return SimpleDateFormat.getDateInstance().format(utc);
+    }
+
 }

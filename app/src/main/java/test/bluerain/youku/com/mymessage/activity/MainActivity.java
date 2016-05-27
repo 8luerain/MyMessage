@@ -1,37 +1,30 @@
 package test.bluerain.youku.com.mymessage.activity;
 
-import android.app.NotificationManager;
+import android.app.LoaderManager;
 import android.content.Intent;
-import android.database.ContentObserver;
+import android.content.Loader;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import java.util.List;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import test.bluerain.youku.com.mymessage.R;
-import test.bluerain.youku.com.mymessage.adapter.MainRecycleAdapter;
-import test.bluerain.youku.com.mymessage.entity.Message;
+import test.bluerain.youku.com.mymessage.adapter.DisplayMessageCursorLoader;
+import test.bluerain.youku.com.mymessage.adapter.MessageCursorAdapter;
 import test.bluerain.youku.com.mymessage.entity.Profile;
-import test.bluerain.youku.com.mymessage.utils.MessageManger;
 
-public class MainActivity extends AppBaseActivity {
+public class MainActivity extends AppBaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = "MainActivity";
 
-    private RecyclerView mRecyclerView;
-    private MainRecycleAdapter mMainRecycleAdapter;
-    private List<Message> mMessageData;
-
-    private NotificationManager mNotificationManager;
-    private Handler mHandler;
+    private ListView mListView;
+    private MessageCursorAdapter mMessageCursorAdapter;
 
     private Toolbar mToolbar;
     private FloatingActionButton mFloatingActionButton;
@@ -39,7 +32,7 @@ public class MainActivity extends AppBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MessageManger.getInstance(this).getMessageFromContent();
+        initEvent();
     }
 
     @Override
@@ -48,88 +41,84 @@ public class MainActivity extends AppBaseActivity {
     }
 
     protected void initVariables() {
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(android.os.Message msg) {
-                super.handleMessage(msg);
 
-            }
-        };
-        getContentResolver().registerContentObserver(MessageManger.SMS_URI, true, new SMSObserver(mHandler));
     }
 
     @Override
     protected void initData(Bundle savedInstanceState) {
-        mMessageData = MessageManger.getInstance(this).getMessageFromContent();
-        mMainRecycleAdapter = new MainRecycleAdapter(this);
-        mMainRecycleAdapter.setMessages(mMessageData);
+        mMessageCursorAdapter = new MessageCursorAdapter(this, null, false);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     protected void initView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.id_recycle_view_main);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(mMainRecycleAdapter);
-        mMainRecycleAdapter.setOnItemClickListener(new MainRecycleAdapter.OnRecycleItemClickListener() {
-            @Override
-            public void OnItemClick(View view, Object data, int position) {
-                Message clickMessage = (Message) data;
-                MessageManger.setMessageReaded(clickMessage.getId());
-                Intent intent = new Intent(MainActivity.this, MessageDetailActivity.class);
-                intent.putExtra(Profile.INTENT_MESSAGE_KEY, clickMessage);
-//                startActivity(intent);
-            }
-        });
+        mListView = (ListView) findViewById(R.id.id_list_view_view_main);
+        mListView.setAdapter(mMessageCursorAdapter);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mFloatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+    }
+
+    private void initEvent() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                handleItemClick(view);
+            }
+        });
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this, ComposeSmsActivity.class);
+                startActivity(intent);
+//                testSendMessage();
             }
         });
     }
 
 
-    class SMSObserver extends ContentObserver {
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new DisplayMessageCursorLoader(this);
+    }
 
-        public SMSObserver(Handler handler) {
-            super(handler);
-        }
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mMessageCursorAdapter.swapCursor(data);
+    }
 
-        @Override
-        public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
-            Log.d(TAG, "onChange: message change.... ");
-
-//            mMessageData = MessageManger.getInstance(MainActivity.this).getMessageFromContent();
-//            mMainRecycleAdapter.notifyDataSetChanged();
-        }
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mMessageCursorAdapter.swapCursor(null);
     }
 
 
-    private void loadMessagePanel() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
+    private String getStringFromViewId(View view, int id) {
+        String s = null;
+        if (view != null) {
+            View viewById = view.findViewById(id);
+            if (viewById instanceof TextView)
+                s = ((TextView) viewById).getText().toString();
+        }
+        return s;
+    }
 
+    private void handleItemClick(View view) {
+        jumpToDetailPage(view);
+    }
 
-        intent.putExtra("address", "186...");
-
-
-        intent.putExtra("sms_body", "短信内容");
-
-
-        intent.setType("vnd.android-dir/mms-sms");
-
-
+    private void jumpToDetailPage(View view) {
+        String phoneNum = getStringFromViewId(view, R.id.id_txv_phone_num_item_recycle_main_message);
+        Intent intent = new Intent(this, ComposeSmsActivity.class);
+        intent.putExtra(Profile.INTENT_MESSAGE_KEY, phoneNum);
         startActivity(intent);
     }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mHandler.removeCallbacksAndMessages(null);
+
+    public void testSendMessage() {
+        Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + "1234556"));
+        intent.putExtra("sms_body", "tttttttttttt");
+        startActivity(intent);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

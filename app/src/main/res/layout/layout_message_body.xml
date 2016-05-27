@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
+
+    <ImageView
+        android:id="@+id/id_igv_message_body_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:src="@mipmap/ic_launcher"/>
+
+    <TextView
+        android:id="@+id/id_txv_message_body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/id_igv_message_body_contact"
+        android:textSize="20dp"
+        tools:text="这是一条短信...这是一条短信...这是一条短信...这是一条短信...这是一条短信...这是一条短信..."/>
+
+    <TextView
+        android:id="@+id/id_txv_message_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/id_txv_message_body"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/id_igv_message_body_contact"
+        android:textSize="20dp"
+        tools:text="4:24"/>
+
+</RelativeLayout>
